@@ -1,13 +1,13 @@
 import type { Exam } from "@/types/exam"
 
 export const examSample: Exam = {
-  id: 1,
+  id: Date.now(),
   title: "Basic Mathematic Exam",
   description:
     "This exam test fundamental concepts in arithmetic and geometry.",
   questions: [
     {
-      id: 1,
+      id: Date.now(),
       title: "What is 2 + 2?",
       description: "Choose the correct answer for the sum of 2 + 2",
       answers: [

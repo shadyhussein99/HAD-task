@@ -1,4 +1,4 @@
-import { ExamForm } from "./_components/ExamForm";
+// import { ExamForm } from "../../components/examForm/ExamForm";
 
 type SingleExamProps = {
   params: {
@@ -11,8 +11,9 @@ async function SingleExam({ params }: SingleExamProps) {
 
   return (
     <div className="flex flex-col gap-10">
-      <h1 className="text-4xl font-bold text-center">Modify Exam</h1>
-      <ExamForm />
+      <h1 className="text-4xl font-bold text-center">Edit Exam</h1>
+
+      {/* <ExamForm examID={examID} /> */}
     </div>
   );
 }

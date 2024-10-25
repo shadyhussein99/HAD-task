@@ -1,9 +1,9 @@
-type ExamsCardFieldProps = {
+type ExamsInformationProps = {
   label: string;
   value: string;
 };
 
-export function ExamsCardField({ label, value }: ExamsCardFieldProps) {
+export function ExamInformation({ label, value }: ExamsInformationProps) {
   return (
     <section className=" flex items-center gap-2">
       <h3 className="text-lg font-semibold">{label}</h3>

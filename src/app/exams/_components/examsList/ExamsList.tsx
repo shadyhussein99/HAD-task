@@ -16,11 +16,13 @@ export function ExamsList() {
   useEffect(() => {
     window.localStorage.setItem("exams", JSON.stringify([examSample]));
   }, []);
-  console.log("examsList", examsList);
+
   return (
     <div>
       {examsList.map((exam) => (
-        <ExamsCard key={exam.id} exam={exam} />
+        <div key={exam.id} className="mb-4">
+          <ExamsCard exam={exam} />
+        </div>
       ))}
     </div>
   );
