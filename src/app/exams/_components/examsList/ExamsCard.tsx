@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { ExamInformation } from "@/components/ExamInformation";
+import { ExamInformation } from "@/sharedComponents/ExamInformation";
 
 import type { Exam } from "@/types/exam";
 

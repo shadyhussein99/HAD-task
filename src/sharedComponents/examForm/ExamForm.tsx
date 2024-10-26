@@ -99,14 +99,14 @@ export function ExamForm({ examID }: ExamFormProps) {
     <>
       <Toaster />
       <div className="flex flex-col gap-10">
-        <div className="flex items-center justify-center relative">
+        <div className="relative">
           <h1 className="text-4xl font-bold text-center">
             {examID ? "Edit" : "Create"} Exam
           </h1>
           <CustomButton
             label="Back to Exams List"
             onClick={() => router.push("/exams")}
-            className="absolute right-0"
+            className="absolute top-0 right-0"
           />
         </div>
 
