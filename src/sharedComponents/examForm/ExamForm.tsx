@@ -1,12 +1,16 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 import { useRouter } from "next/navigation";
 
-import { useForm, useFieldArray } from "react-hook-form";
 import * as yup from "yup";
+import { useForm, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import toast, { Toaster } from "react-hot-toast";
+
+import { validationSchema } from "./validationSchema";
 
 import { ExamField } from "./ExamField";
 import type { Exam } from "@/types/exam";
@@ -17,32 +21,28 @@ type ExamFormProps = {
   examID?: string;
 };
 
-const validationSchema = yup.object().shape({
-  title: yup.string().required(" Exam Title is required"),
-  description: yup.string().optional(),
-  questions: yup
-    .array()
-    .of(
-      yup.object().shape({
-        title: yup.string().required("Question title is required"),
-        description: yup.string().optional(),
-        answers: yup
-          .array()
-          .of(
-            yup.object().shape({
-              title: yup.string().required("Answer is required"),
-              isCorrect: yup.boolean().required(),
-              description: yup.string().optional(),
-            })
-          )
-          .min(2, "At least two answers are required"),
-      })
-    )
-    .min(1, "At least one question required"),
-});
-
 export function ExamForm({ examID }: ExamFormProps) {
+  const [examsList, setExamsList] = useState<Exam[]>([]);
+  const [editedExam, setEditedExam] = useState<Exam | object>({});
+  const [editedExamIndex, setEditedExamIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    const localStorageExams: Exam[] = JSON.parse(
+      window.localStorage.getItem("exams") || "[]"
+    );
+    const requiredExam = localStorageExams.find(
+      (exam: Exam) => exam.id === Number(examID)
+    );
+    const editedExamIndex = localStorageExams.findIndex(
+      (exam: Exam) => exam.id === requiredExam?.id
+    );
+    setExamsList(localStorageExams);
+    setEditedExam(requiredExam ?? {});
+    setEditedExamIndex(editedExamIndex);
+  }, [examID]);
+
   const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -67,7 +67,7 @@ export function ExamForm({ examID }: ExamFormProps) {
         },
       ],
     },
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver(validationSchema as yup.ObjectSchema<Exam>),
     mode: "onChange",
   });
 
@@ -79,7 +79,16 @@ export function ExamForm({ examID }: ExamFormProps) {
     control,
     name: "questions",
   });
-  console.log("isValid", isValid);
+
+  const handleDeleteExam = () => {
+    if (editedExamIndex !== null) {
+      examsList.splice(editedExamIndex, 1);
+      localStorage.setItem("exams", JSON.stringify(examsList));
+      toast.success("Deleted exam successfully");
+      router.push("/exams");
+    }
+  };
+
   const handleAddQuestion = () => {
     appendQuestion({
       id: Date.now(),
@@ -93,15 +102,23 @@ export function ExamForm({ examID }: ExamFormProps) {
   };
 
   const onSubmit = (data: Exam) => {
-    const previousExams = window.localStorage.getItem("exams");
-    if (previousExams) {
-      const parsedExams = JSON.parse(previousExams);
-      parsedExams.push(data);
-      localStorage.setItem("exams", JSON.stringify(parsedExams));
-      toast.success("Created exam successfully");
-      router.push("/exams");
+    if (examID && editedExamIndex !== null) {
+      examsList[editedExamIndex] = data;
+    } else {
+      examsList.push(data);
     }
+    localStorage.setItem("exams", JSON.stringify(examsList));
+    toast.success(`${examID ? "Edited" : "Created"} exam successfully`);
+    router.push("/exams");
   };
+
+  useEffect(() => {
+    if (examID && editedExam) {
+      setValue("title", (editedExam as Exam)?.title || "");
+      setValue("description", (editedExam as Exam)?.description || "");
+      setValue("questions", (editedExam as Exam)?.questions || []);
+    }
+  }, [setValue, examID, editedExam]);
 
   return (
     <>
@@ -111,11 +128,21 @@ export function ExamForm({ examID }: ExamFormProps) {
           <h1 className="text-4xl font-bold text-center">
             {examID ? "Edit" : "Create"} Exam
           </h1>
-          <CustomButton
-            label="Back to Exams List"
-            onClick={() => router.push("/exams")}
-            className="absolute top-0 right-0"
-          />
+
+          <div className="absolute top-0 right-0">
+            {examID && (
+              <CustomButton
+                label="Delete Exam"
+                onClick={handleDeleteExam}
+                className="bg-red-600 hover:bg-red-500 me-4"
+              />
+            )}
+
+            <CustomButton
+              label="Back to Exams List"
+              onClick={() => router.push("/exams")}
+            />
+          </div>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -145,6 +172,7 @@ export function ExamForm({ examID }: ExamFormProps) {
               />
             </div>
 
+            {/* Validation for questions */}
             {errors.questions?.root?.message && (
               <p className="text-red-500 text-sm my-1">
                 {errors.questions?.root?.message}

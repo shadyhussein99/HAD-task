@@ -1,4 +1,4 @@
-import { UseFormRegister, useFieldArray, Control } from "react-hook-form";
+import { FieldErrors, UseFormRegister, useFieldArray, Control } from "react-hook-form";
 
 import type { Exam } from "@/types/exam";
 
@@ -12,7 +12,7 @@ type AnswerFieldProps = {
   setValue: (name: string, value: boolean) => void;
   watch: (name: string) => boolean;
   register: UseFormRegister<Exam>;
-  errors: { [key: string]: any };
+  errors:FieldErrors<Exam>;
 };
 
 export function AnswerField({
