@@ -60,7 +60,7 @@ export function ExamForm({ examID }: ExamFormProps) {
         },
       ],
     },
-    // resolver: yupResolver(validationSchema),
+    resolver: yupResolver(validationSchema),
   });
 
   const {
@@ -89,7 +89,7 @@ export function ExamForm({ examID }: ExamFormProps) {
     if (previousExams) {
       const parsedExams = JSON.parse(previousExams);
       parsedExams.push(data);
-      window.localStorage.setItem("exams", JSON.stringify(parsedExams));
+      localStorage.setItem("exams", JSON.stringify(parsedExams));
       toast.success("Created exam successfully");
       router.push("/exams");
     }

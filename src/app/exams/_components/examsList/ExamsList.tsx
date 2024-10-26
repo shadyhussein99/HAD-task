@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 
 import { ExamsCard } from "./ExamsCard";
 
@@ -8,13 +8,17 @@ import { examSample } from "@/dummyData/examSample";
 import type { Exam } from "@/types/exam";
 
 export function ExamsList() {
-  const examsList: Exam[] = JSON.parse(
-    window.localStorage.getItem("exams") || "[]"
-  );
+  const [examsList, setExamsList] = useState<Exam[] | []>([]);
 
   // To initially add the default exam in local storage
   useEffect(() => {
-    window.localStorage.setItem("exams", JSON.stringify([examSample]));
+    const localStorageExams: Exam[] =
+      JSON.parse(window.localStorage.getItem("exams") || "[]") ?? [];
+
+    if (localStorageExams?.length === 0) {
+      window.localStorage.setItem("exams", JSON.stringify([examSample]));
+    }
+    setExamsList(localStorageExams);
   }, []);
 
   return (
