@@ -10,6 +10,7 @@ type ExamFieldProps = {
   placeholder?: string;
   textArea?: boolean;
   register: UseFormRegister<Exam>;
+  error?: string;
 };
 
 export function ExamField({
@@ -18,6 +19,7 @@ export function ExamField({
   textArea = false,
   placeholder,
   register,
+  error,
 }: ExamFieldProps) {
   return (
     <div>
@@ -33,6 +35,7 @@ export function ExamField({
           register={register}
         />
       </section>
+      {error && <p className="text-red-500 text-sm my-1">{error}</p>}
     </div>
   );
 }

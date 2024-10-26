@@ -38,12 +38,19 @@ const validationSchema = yup.object().shape({
           .min(2, "At least two answers are required"),
       })
     )
-    .required("At least one question is required"),
+    .min(1, "At least one question required"),
 });
 
 export function ExamForm({ examID }: ExamFormProps) {
   const router = useRouter();
-  const { register, handleSubmit, setValue, control, watch } = useForm<Exam>({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    control,
+    watch,
+    formState: { errors, isValid },
+  } = useForm<Exam>({
     defaultValues: {
       id: Date.now(),
       title: "",
@@ -61,6 +68,7 @@ export function ExamForm({ examID }: ExamFormProps) {
       ],
     },
     resolver: yupResolver(validationSchema),
+    mode: "onChange",
   });
 
   const {
@@ -71,7 +79,7 @@ export function ExamForm({ examID }: ExamFormProps) {
     control,
     name: "questions",
   });
-
+  console.log("isValid", isValid);
   const handleAddQuestion = () => {
     appendQuestion({
       id: Date.now(),
@@ -117,6 +125,7 @@ export function ExamForm({ examID }: ExamFormProps) {
               inputName="title"
               placeholder="Exam Title"
               register={register}
+              error={errors.title?.message}
             />
             <ExamField
               label="Description: "
@@ -124,6 +133,7 @@ export function ExamForm({ examID }: ExamFormProps) {
               textArea
               placeholder="Exam Description"
               register={register}
+              error={errors.description?.message}
             />
 
             <div className="flex items-center gap-3">
@@ -135,6 +145,12 @@ export function ExamForm({ examID }: ExamFormProps) {
               />
             </div>
 
+            {errors.questions?.root?.message && (
+              <p className="text-red-500 text-sm my-1">
+                {errors.questions?.root?.message}
+              </p>
+            )}
+
             {questions.map((question, index) => (
               <div key={question.id} className="mb-4 flex flex-col gap-2">
                 <ExamField
@@ -143,6 +159,7 @@ export function ExamForm({ examID }: ExamFormProps) {
                   textArea
                   placeholder={`Question ${index + 1}`}
                   register={register}
+                  error={errors.questions?.[index]?.title?.message}
                 />
                 <ExamField
                   label={`D${index + 1}) `}
@@ -150,6 +167,7 @@ export function ExamForm({ examID }: ExamFormProps) {
                   textArea
                   placeholder={`Description ${index + 1}`}
                   register={register}
+                  error={errors.questions?.[index]?.description?.message}
                 />
                 <AnswerField
                   control={control}
@@ -157,6 +175,7 @@ export function ExamForm({ examID }: ExamFormProps) {
                   setValue={setValue as (name: string, value: boolean) => void}
                   watch={watch}
                   register={register}
+                  errors={errors}
                 />
 
                 <div className="flex justify-end">
@@ -169,7 +188,7 @@ export function ExamForm({ examID }: ExamFormProps) {
               </div>
             ))}
 
-            <CustomButton label="Submit" type="submit" />
+            <CustomButton label="Submit" type="submit" disabled={!isValid} />
           </div>
         </form>
       </div>

@@ -5,6 +5,7 @@ type CustomButtonProps = {
   type?: "submit" | "reset" | "button";
   className?: string;
   onClick?: () => void;
+  disabled?: boolean;
 };
 
 export function CustomButton({
@@ -12,12 +13,16 @@ export function CustomButton({
   type = "button",
   onClick,
   className,
+  disabled,
 }: CustomButtonProps) {
   return (
     <button
       type={type}
       onClick={onClick}
-      className={`bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-500 transition duration-200 ${className}`}
+      disabled={disabled}
+      className={`bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-500 transition duration-200 ${className} ${
+        disabled ? "opacity-50" : ""
+      }`}
     >
       {label}
     </button>
